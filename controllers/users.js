@@ -21,9 +21,9 @@ const getUsers = (_, res, next) => {
 
 const createUser = (req, res, next) => {
   const { about, name, avatar } = req.body;
-  // if (!about || !name || !avatar) {
-  //   next(new ServerError('Valid err'));
-  // }
+  if (!about || !name || !avatar) {
+    next(new ServerError('Valid err'));
+  }
 
   User.create({ name, about, avatar })
     .then((user) => {
