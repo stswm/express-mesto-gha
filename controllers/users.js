@@ -21,9 +21,9 @@ const getUsers = (_, res, next) => {
 
 const createUser = (req, res, next) => {
   const { about, name, avatar } = req.body;
-  if (!about || !name || !avatar) {
-    next(new ServerError('Valid err'));
-  }
+  // if (!about || !name || !avatar) {
+  //   next(new ServerError('Valid err'));
+  // }
 
   User.create({ name, about, avatar })
     .then((user) => {
@@ -31,8 +31,9 @@ const createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        const fields = Object.keys(err.errors).join(', ');
-        next(new ServerError(`${fields} are not correct`));
+        // const fields = Object.keys(err.errors).join(', ');
+        return res.status(400).send({ message: err });
+        // next(new ServerError(`${fields} are not correct`));
       }
       next(new ServerError());
     });
