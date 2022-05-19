@@ -1,8 +1,4 @@
-const {
-  // ServerError,
-  NotFoundErr,
-  // BadReqestError,
-} = require('./Errors');
+const { NotFoundErr } = require('../Errors/NotFoundErr');
 
 const badUrl = (req, res, next) => {
   next(new NotFoundErr('Page not found'));

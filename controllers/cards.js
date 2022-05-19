@@ -1,13 +1,7 @@
-/* eslint-disable max-len */
-/* eslint-disable eqeqeq */
-/* eslint-disable consistent-return */
-/* eslint-disable no-shadow */
 const Card = require('../models/card');
-const {
-  ServerError,
-  NotFoundErr,
-  BadReqestError,
-} = require('./Errors');
+const { ServerError } = require('../Errors/ServerError');
+const { NotFoundErr } = require('../Errors/NotFoundErr');
+const { BadReqestError } = require('../Errors/BadReqestError');
 
 const getCards = (_, res, next) => {
   Card.find({})
@@ -48,7 +42,7 @@ const deleteCard = (req, res, next) => {
       res.status(200).send(card);
     })
     .catch((err) => {
-      if (err.kind == 'ObjectId') {
+      if (err.kind === 'ObjectId') {
         next(new BadReqestError('Card Id is not correct'));
       }
       next(new ServerError());
@@ -69,7 +63,7 @@ const addLikeCard = (req, res, next) => {
       res.status(200).send({ data: card });
     })
     .catch((err) => {
-      if (err.kind == 'ObjectId') {
+      if (err.kind === 'ObjectId') {
         next(new BadReqestError('Card Id is not correct'));
       }
       next(new ServerError());
@@ -87,10 +81,10 @@ const deleteLikeCard = (req, res, next) => {
       if (!card) {
         return next(new NotFoundErr('Card not found'));
       }
-      res.status(200).send({ data: card });
+      return res.status(200).send({ data: card });
     })
     .catch((err) => {
-      if (err.kind == 'ObjectId') {
+      if (err.kind === 'ObjectId') {
         next(new BadReqestError('Card Id is not correct'));
       }
       next(new ServerError());
