@@ -45,7 +45,7 @@ const deleteCard = (req, res, next) => {
       if (!card) {
         next(new NotFoundErr('Card not found'));
       }
-      res.status(200).send(`${card} Card delete successful`);
+      res.status(200).send(card);
     })
     .catch((err) => {
       if (err.kind == 'ObjectId') {
@@ -90,7 +90,7 @@ const deleteLikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.kind == 'ObjectId') {
-        next(new ServerError('Card Id is not correct'));
+        next(new BadReqestError('Card Id is not correct'));
       }
     });
 };
