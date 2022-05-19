@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { userRouter } = require('./routes/users');
 const { cardRouter } = require('./routes/cards');
+const {mainRouter} = require('./routes/main');
 
 const app = express();
 const { PORT = 3000 } = process.env;
@@ -17,6 +18,7 @@ app.use((req, res, next) => {
 });
 app.use('/users', userRouter);
 app.use('/cards', cardRouter);
+app.use('*', mainRouter);
 const errorHeandler = (err, req, res, next) => {
   console.log(`Error code ${err.code}: ${err.message}`);
   res.status(err.code).send({ message: err.message });

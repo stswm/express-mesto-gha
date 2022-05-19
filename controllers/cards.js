@@ -49,7 +49,7 @@ const deleteCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.kind == 'ObjectId') {
-        next(new ServerError('Card Id is not correct'));
+        next(new BadReqestError('Card Id is not correct'));
       }
       // next(new ServerError());
     });
@@ -70,7 +70,7 @@ const addLikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.kind == 'ObjectId') {
-        next(new ServerError('Card Id is not correct'));
+        next(new BadReqestError('Card Id is not correct'));
       }
     });
 };
