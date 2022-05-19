@@ -103,8 +103,7 @@ const updateUserAvatar = (req, res, next) => {
   )
     .then((user) => {
       if (!user) {
-        console.log(user);
-        next(new NotFoundErr('User not found'));
+        return next(new NotFoundErr('User not found'));
       }
       res.status(200).send(user);
     })
