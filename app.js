@@ -19,7 +19,7 @@ app.use('/users', userRouter);
 app.use('/cards', cardRouter);
 const errorHeandler = (err, req, res, next) => {
   console.log(`Error code ${err.code}: ${err.message}`);
-  res.status(err.code).send(err.message);
+  res.status(err.code).send({ message: err.message });
   next();
 };
 app.use(errorHeandler);

@@ -6,6 +6,7 @@ const Card = require('../models/card');
 const {
   ServerError,
   NotFoundErr,
+  BadReqestError,
 } = require('./Errors');
 
 const getCards = (_, res, next) => {
@@ -20,9 +21,9 @@ const getCards = (_, res, next) => {
 
 const createCard = (req, res, next) => {
   const { name, link } = req.body;
-  if (!name || !link) {
-    next(new ServerError());
-  }
+  // if (!name || !link) {
+  //   next(new BadReqestError());
+  // }
   const owner = req.user._id;
   Card.create({ name, link, owner })
     .then((card) => {
@@ -31,7 +32,7 @@ const createCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const fields = Object.keys(err.errors).join(' and ');
-        next(new ServerError(`Field(s) ${fields} are not correct`));
+        next(new BadReqestError(`Field(s) ${fields} are not correct`));
       }
       next(new ServerError());
     });

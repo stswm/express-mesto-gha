@@ -31,9 +31,9 @@ const createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        // const fields = Object.keys(err.errors).join(', ');
-        return res.status(400).send({ message: err });
-        // next(new ServerError(`${fields} are not correct`));
+        const fields = Object.keys(err.errors).join(' and ');
+        // return res.status(400).send({ message: err });
+        next(new BadReqestError(`Field(s) ${fields} are not correct`));
       }
       next(new ServerError());
     });
@@ -50,7 +50,8 @@ const getUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.kind == 'ObjectId') {
-        next(new ServerError('Id is not correct'));
+        // return res.status(400).send({ message: 'id is not correct' });
+        next(new BadReqestError('Id is not correct'));
       }
 
       if (err.code == 11000) {
@@ -75,15 +76,15 @@ const updateUserProf = (req, res, next) => {
     },
   )
     .then((userInfo) => {
-      // if (!userInfo) {
-      //   next(new NotFoundErr('User not found'));
-      // }
+      if (!userInfo) {
+        next(new NotFoundErr('User not found'));
+      }
       res.status(200).send(userInfo);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const fields = Object.keys(err.errors).join(' and ');
-        next(new ServerError(`Field(s) ${fields} are not correct`));
+        next(new BadReqestError(`Field(s) ${fields} are not correct`));
       }
       next(new ServerError());
     });
@@ -101,15 +102,16 @@ const updateUserAvatar = (req, res, next) => {
     },
   )
     .then((user) => {
-      // if (!user) {
-      //   next(new NotFoundErr('test'));
-      // }
+      if (!user) {
+        console.log(user);
+        next(new NotFoundErr('User not found'));
+      }
       res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const fields = Object.keys(err.errors).join(' and ');
-        next(new ServerError(`Field(s) ${fields} are not correct`));
+        next(new BadReqestError(`Field(s) ${fields} are not correct`));
       }
       next(new ServerError());
     });

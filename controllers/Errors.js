@@ -6,7 +6,7 @@ class ServerError extends Error {
   }
 }
 class BadReqestError extends Error {
-  constructor(message) {
+  constructor(message = 'Server error 400') {
     super(message);
     this.code = 400;
   }
