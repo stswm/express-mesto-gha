@@ -101,7 +101,7 @@ const updateUserAvatar = (req, res, next) => {
       if (!user) {
         return next(new NotFoundErr('User not found'));
       }
-      res.status(200).send(user);
+      return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
