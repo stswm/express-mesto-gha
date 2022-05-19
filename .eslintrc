@@ -10,10 +10,6 @@
         ]
       }
     ],
-    "no-control-regex": 0,
-    "func-names": [
-      "error",
-      "never"
-    ]
+    "no-control-regex": 0
   }
 }

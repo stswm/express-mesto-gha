@@ -1,7 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable eqeqeq */
-/* eslint-disable consistent-return */
-/* eslint-disable no-shadow */
 const User = require('../models/user');
 const {
   ServerError,
@@ -49,15 +45,15 @@ const getUser = (req, res, next) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.kind == 'ObjectId') {
+      if (err.kind === 'ObjectId') {
         // return res.status(400).send({ message: 'id is not correct' });
         next(new BadReqestError('Id is not correct'));
       }
 
-      if (err.code == 11000) {
+      if (err.code === 11000) {
         next(BadReqestError('Such user is already in database'));
       }
-      // next(new ServerError());
+      next(new ServerError());
     });
 };
 
