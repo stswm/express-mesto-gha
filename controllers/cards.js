@@ -15,9 +15,6 @@ const getCards = (_, res, next) => {
 
 const createCard = (req, res, next) => {
   const { name, link } = req.body;
-  // if (!name || !link) {
-  //   next(new BadReqestError());
-  // }
   const owner = req.user._id;
   Card.create({ name, link, owner })
     .then((card) => {

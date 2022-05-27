@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const { ServerError } = require('../Errors/ServerError');
 const { NotFoundErr } = require('../Errors/NotFoundErr');
@@ -14,26 +16,36 @@ const getUsers = (_, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  const { about, name, avatar } = req.body;
-  // if (!about || !name || !avatar) {
-  //   next(new BadReqestError('Valid err'));
-  // }
-
-  User.create({ name, about, avatar })
+  const {
+    about,
+    name,
+    avatar,
+    email,
+    password,
+  } = req.body;
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    }))
     .then((user) => {
       res.status(201).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const fields = Object.keys(err.errors).join(' and ');
-        // return res.status(400).send({ message: err });
         next(new BadReqestError(`Field(s) ${fields} are not correct`));
+      } if (err.code === 11000) {
+        next(new ServerError('11000'));
       }
-      next(new ServerError());
+      // next(new ServerError('test'));
     });
 };
 
-const getUser = (req, res, next) => {
+const getUserById = (req, res, next) => {
   const { id } = req.params;
   User.findById(id)
     .then((user) => {
@@ -44,7 +56,6 @@ const getUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        // return res.status(400).send({ message: 'id is not correct' });
         next(new BadReqestError('Id is not correct'));
       }
 
@@ -55,6 +66,56 @@ const getUser = (req, res, next) => {
     });
 };
 
+const getUser = (req, res, next) => {
+  User.findById(req.user._id)
+    .then((user) => res.status(200).send({ user }))
+    .catch((err) => {
+      if (err.message === 'NotFound') {
+        next(new NotFoundErr());
+      }
+      next(new ServerError());
+    });
+};
+
+const login = (req, res) => {
+  const { email, password } = req.body;
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      res.send({ token });
+    })
+    .catch((err) => {
+      res.status(401).send({ message: err.message });
+    });
+};
+// !
+// const login = (req, res, next) => {
+//   const { email, password } = req.body;
+//   User.findOne({ email })
+//     .then((user) => {
+//       if (!user) {
+//         return res.status(400).send({ message: 'not found12' });
+//       }
+//       return {
+//         isPassValid: bcrypt.compare(password, user.password),
+//         user,
+//       };
+//     })
+//     .then(({ isPassValid, user }) => {
+//       if (!isPassValid) {
+//         return res.status(400).send({ message: 'not found2' });
+//       }
+//       const token = jwt.sign({ _id: user._id },'testKey', { expiresIn: '7d' });
+//       return res.status(200).send({ token });
+//     })
+//     .catch((err) => {
+//       if (err.message === 'not_found') {
+//         return res.status(400).send({ message: 'not found1' });
+//       }
+//       return res.status(500).send({ message: 'hz' });
+//     });
+// };
+// !
 const updateUserProf = (req, res, next) => {
   const { name, about } = req.body;
   const id = req.user._id;
@@ -111,9 +172,11 @@ const updateUserAvatar = (req, res, next) => {
 };
 
 module.exports = {
+  getUserById,
   getUser,
   getUsers,
   createUser,
+  login,
   updateUserProf,
   updateUserAvatar,
 };
