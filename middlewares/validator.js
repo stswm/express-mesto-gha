@@ -20,7 +20,7 @@ const validateUpdateUserProf = celebrate({
 });
 const validateUserId = celebrate({
   params: Joi.object().keys({
-    id: Joi.string().required().hex().length(24),
+    id: Joi.string().required(),
   }),
 });
 const validateUpdateUserAvatar = celebrate({

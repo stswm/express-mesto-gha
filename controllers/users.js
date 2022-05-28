@@ -69,11 +69,14 @@ const getUserById = (req, res, next) => {
 };
 
 const getUser = (req, res, next) => {
-  console.log('qq');
   User.findById(req.user._id)
-    .then((user) => res.status(200).send({ user }))
+    .then((user) => {
+      if (!user) {
+        next(new NotFoundErr());
+      }
+      res.status(200).send({ user });
+    })
     .catch((err) => {
-      console.log('test');
       if (err.message === 'NotFound') {
         next(new NotFoundErr());
       }
