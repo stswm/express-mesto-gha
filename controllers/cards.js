@@ -47,7 +47,7 @@ const deleteCard = (req, res, next) => {
       if (err.kind === 'ObjectId') {
         next(new BadReqestError('Card Id is not correct'));
       }
-      next(new ServerError());
+      next(err);
     });
 };
 

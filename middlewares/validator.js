@@ -8,7 +8,7 @@ const validateNewUser = celebrate({
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().regex(reg),
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+    password: Joi.string().required(),
   }),
 });
 
@@ -20,7 +20,7 @@ const validateUpdateUserProf = celebrate({
 });
 const validateUserId = celebrate({
   params: Joi.object().keys({
-    id: Joi.string().required(),
+    id: Joi.string().required().hex().length(24),
   }),
 });
 const validateUpdateUserAvatar = celebrate({
