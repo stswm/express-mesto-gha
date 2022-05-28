@@ -18,12 +18,12 @@ const auth = require('./middlewares/auth');
 const app = express();
 const { PORT = 3000 } = process.env;
 
-mongoose.connect('mongodb://localhost:27017/mestodb');
+mongoose.connect('mongodb://localhost:27017/qq');
 
 app.use(express.json());
 
-app.post('/signin', validateLogin, login);
 app.post('/signup', validateNewUser, createUser);
+app.post('/signin', validateLogin, login);
 
 app.use(auth);
 app.use('/users', userRouter);
