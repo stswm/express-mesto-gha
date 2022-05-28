@@ -4,6 +4,8 @@ const User = require('../models/user');
 const { ServerError } = require('../Errors/ServerError');
 const { NotFoundErr } = require('../Errors/NotFoundErr');
 const { BadReqestError } = require('../Errors/BadReqestError');
+const { AuthError } = require('../Errors/AuthError');
+const { ConflictingError } = require('../Errors/ConflictingError');
 
 const getUsers = (_, res, next) => {
   User.find({})
@@ -39,9 +41,9 @@ const createUser = (req, res, next) => {
         const fields = Object.keys(err.errors).join(' and ');
         next(new BadReqestError(`Field(s) ${fields} are not correct`));
       } if (err.code === 11000) {
-        next(new ServerError('11000'));
+        next(new ConflictingError('Этот email уже занят'));
       }
-      // next(new ServerError('test'));
+      next(err);
     });
 };
 
@@ -67,9 +69,11 @@ const getUserById = (req, res, next) => {
 };
 
 const getUser = (req, res, next) => {
+  console.log('qq');
   User.findById(req.user._id)
     .then((user) => res.status(200).send({ user }))
     .catch((err) => {
+      console.log('test');
       if (err.message === 'NotFound') {
         next(new NotFoundErr());
       }
@@ -77,45 +81,18 @@ const getUser = (req, res, next) => {
     });
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id }, 'testKey', { expiresIn: '7d' });
       res.send({ token });
     })
-    .catch((err) => {
-      res.status(401).send({ message: err.message });
+    .catch(() => {
+      next(new AuthError());
     });
 };
-// !
-// const login = (req, res, next) => {
-//   const { email, password } = req.body;
-//   User.findOne({ email })
-//     .then((user) => {
-//       if (!user) {
-//         return res.status(400).send({ message: 'not found12' });
-//       }
-//       return {
-//         isPassValid: bcrypt.compare(password, user.password),
-//         user,
-//       };
-//     })
-//     .then(({ isPassValid, user }) => {
-//       if (!isPassValid) {
-//         return res.status(400).send({ message: 'not found2' });
-//       }
-//       const token = jwt.sign({ _id: user._id },'testKey', { expiresIn: '7d' });
-//       return res.status(200).send({ token });
-//     })
-//     .catch((err) => {
-//       if (err.message === 'not_found') {
-//         return res.status(400).send({ message: 'not found1' });
-//       }
-//       return res.status(500).send({ message: 'hz' });
-//     });
-// };
-// !
+
 const updateUserProf = (req, res, next) => {
   const { name, about } = req.body;
   const id = req.user._id;

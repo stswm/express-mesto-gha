@@ -1,11 +1,19 @@
 const { NotFoundErr } = require('../Errors/NotFoundErr');
 
-const badUrl = (req, res, next) => {
+const badUrl = (_req, _res, next) => {
   next(new NotFoundErr('Page not found'));
 };
 const errorHeandler = (err, req, res, next) => {
-  console.log(`Error code ${err.code}: ${err.message}`);
-  res.status(err.code).send({ message: err.message });
+  if (err.kind === 'ObjectId') {
+    res.status(400).send({
+      message: 'Переданы неверные данные',
+    });
+  }
+  res.status(err.code).send({
+    message: err.code === 500
+      ? 'server error'
+      : err.message,
+  });
   next();
 };
 
