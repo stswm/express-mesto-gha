@@ -44,11 +44,11 @@ const createUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const fields = Object.keys(err.errors).join(' and ');
-        next(new BadReqestError(`Field(s) ${fields} are not correct`));
+        return next(new BadReqestError(`Field(s) ${fields} are not correct`));
       } if (err.code === 11000) {
-        next(new ConflictingError('Этот email уже занят'));
+        return next(new ConflictingError('Этот email уже занят'));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -57,19 +57,15 @@ const getUserById = (req, res, next) => {
   User.findById(id)
     .then((user) => {
       if (!user) {
-        next(new NotFoundErr('User not found!!'));
+        return next(new NotFoundErr('User not found!!'));
       }
-      res.status(200).send(user);
+      return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        next(new BadReqestError('Id is not correct'));
+        return next(new BadReqestError('Id is not correct'));
       }
-
-      if (err.code === 11000) {
-        next(BadReqestError('Such user is already in database'));
-      }
-      next(new ServerError());
+      return next(new ServerError());
     });
 };
 
@@ -117,16 +113,16 @@ const updateUserProf = (req, res, next) => {
   )
     .then((userInfo) => {
       if (!userInfo) {
-        next(new NotFoundErr('User not found'));
+        return next(new NotFoundErr('User not found'));
       }
-      res.status(200).send(userInfo);
+      return res.status(200).send(userInfo);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const fields = Object.keys(err.errors).join(' and ');
-        next(new BadReqestError(`Field(s) ${fields} are not correct`));
+        return next(new BadReqestError(`Field(s) ${fields} are not correct`));
       }
-      next(new ServerError());
+      return next(new ServerError());
     });
 };
 
@@ -150,9 +146,9 @@ const updateUserAvatar = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const fields = Object.keys(err.errors).join(' and ');
-        next(new BadReqestError(`Field(s) ${fields} are not correct`));
+        return next(new BadReqestError(`Field(s) ${fields} are not correct`));
       }
-      next(new ServerError());
+      return next(new ServerError());
     });
 };
 

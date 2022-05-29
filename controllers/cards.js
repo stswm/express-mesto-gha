@@ -24,9 +24,9 @@ const createCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const fields = Object.keys(err.errors).join(' and ');
-        next(new BadReqestError(`Field(s) ${fields} are not correct`));
+        return next(new BadReqestError(`Field(s) ${fields} are not correct`));
       }
-      next(new ServerError());
+      return next(new ServerError());
     });
 };
 
@@ -36,18 +36,18 @@ const deleteCard = (req, res, next) => {
   Card.findById(id)
     .then((card) => {
       if (!card) {
-        next(new NotFoundErr('Card not found'));
+        return next(new NotFoundErr('Card not found'));
       }
       if (card.owner.toString() !== req.user._id) {
         throw new ForbiddenError();
       }
-      card.remove().then(() => res.status(200).send(card));
+      return card.remove().then(() => res.status(200).send(card));
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        next(new BadReqestError('Card Id is not correct'));
+        return next(new BadReqestError('Card Id is not correct'));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -60,9 +60,9 @@ const addLikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        next(new NotFoundErr('Card not found'));
+        return next(new NotFoundErr('Card not found'));
       }
-      res.status(200).send({ data: card });
+      return res.status(200).send({ data: card });
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
@@ -87,9 +87,9 @@ const deleteLikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        next(new BadReqestError('Card Id is not correct'));
+        return next(new BadReqestError('Card Id is not correct'));
       }
-      next(new ServerError());
+      return next(new ServerError());
     });
 };
 
