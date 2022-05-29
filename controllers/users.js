@@ -44,11 +44,11 @@ const createUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const fields = Object.keys(err.errors).join(' and ');
-        return next(new BadReqestError(`Field(s) ${fields} are not correct`));
+        next(new BadReqestError(`Field(s) ${fields} are not correct`));
       } if (err.code === 11000) {
         return next(new ConflictingError('Этот email уже занят'));
       }
-      return next(err);
+      next(err);
     });
 };
 
@@ -59,13 +59,13 @@ const getUserById = (req, res, next) => {
       if (!user) {
         return next(new NotFoundErr('User not found!!'));
       }
-      return res.status(200).send(user);
+      res.status(200).send(user);
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
         return next(new BadReqestError('Id is not correct'));
       }
-      return next(new ServerError());
+      next(new ServerError());
     });
 };
 
@@ -115,14 +115,14 @@ const updateUserProf = (req, res, next) => {
       if (!userInfo) {
         return next(new NotFoundErr('User not found'));
       }
-      return res.status(200).send(userInfo);
+      res.status(200).send(userInfo);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const fields = Object.keys(err.errors).join(' and ');
         return next(new BadReqestError(`Field(s) ${fields} are not correct`));
       }
-      return next(new ServerError());
+      next(new ServerError());
     });
 };
 
@@ -148,7 +148,7 @@ const updateUserAvatar = (req, res, next) => {
         const fields = Object.keys(err.errors).join(' and ');
         return next(new BadReqestError(`Field(s) ${fields} are not correct`));
       }
-      return next(new ServerError());
+      next(new ServerError());
     });
 };
 
